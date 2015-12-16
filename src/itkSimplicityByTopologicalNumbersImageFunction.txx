@@ -24,7 +24,7 @@ SimplicityByTopologicalNumbersImageFunction<TImage, TForegroundConnectivity,
 ::Evaluate(PointType const & point) const
   {
   typename TImage::IndexType index;
-  ConvertPointToNearestIndex(point, index);
+  this->ConvertPointToNearestIndex(point, index);
   return EvaluateAtIndex(index);
   }
 
@@ -50,7 +50,7 @@ SimplicityByTopologicalNumbersImageFunction<TImage, TForegroundConnectivity,
 ::EvaluateAtContinuousIndex(ContinuousIndexType const & contIndex) const
   {
   typename TImage::IndexType index;
-  ConvertContinuousIndexToNearestIndex(contIndex, index);
+  this->ConvertContinuousIndexToNearestIndex(contIndex, index);
   return EvaluateAtIndex(index);
   }
 

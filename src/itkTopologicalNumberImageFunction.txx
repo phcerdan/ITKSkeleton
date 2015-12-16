@@ -16,25 +16,25 @@ TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
   }
 
 template<typename TImage, typename TFGConnectivity, typename TBGConnectivity >
-std::pair<unsigned int, unsigned int> 
+std::pair<unsigned int, unsigned int>
 TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
 ::Evaluate(PointType const & point) const
   {
   typename TImage::IndexType index;
-  ConvertPointToNearestIndex(point, index);
+  this->ConvertPointToNearestIndex(point, index);
   return EvaluateAtIndex(index);
   }
 
 
 template<typename TImage, typename TFGConnectivity, typename TBGConnectivity >
-std::pair<unsigned int, unsigned int> 
+std::pair<unsigned int, unsigned int>
 TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
 ::EvaluateAtIndex(IndexType const & index) const
   {
   unsigned int const imageSize = 
     TFGConnectivity::GetInstance().GetNeighborhoodSize();
   char* subImage = new char[imageSize];
-  
+
   // Get the sub-image
   for(unsigned int i=0; i<imageSize; ++i)
     {
@@ -49,7 +49,7 @@ TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
       remainder /= 3;
       --offset[j];
       }
-    
+
     subImage[i] = 
       (this->GetInputImage()->GetPixel(index+offset)!=
         itk::NumericTraits<typename TImage::PixelType>::Zero)?
@@ -59,12 +59,12 @@ TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
   unsigned int const middle = imageSize/2;
 
   subImage[middle] = 0;
-  
+
   // Topological number in the foreground
   m_ForegroundUnitCubeCCCounter.SetImage(subImage, subImage+imageSize);
   unsigned int const ccNumber = 
     m_ComputeForegroundTN ? m_ForegroundUnitCubeCCCounter() : 0;
-  
+
   // Invert the sub-image
   for(int bit = 0; bit<middle; ++bit)
     {
@@ -74,15 +74,15 @@ TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
     {
     subImage[bit+1] = 255 - subImage[bit+1];
     }
-  
+
   // Topological number in the background
   m_BackgroundUnitCubeCCCounter.SetImage(subImage, 
     subImage+TBGConnectivity::GetInstance().GetNeighborhoodSize());
   assert(TFGConnectivity::GetInstance().GetNeighborsPoints());
-  
+
   unsigned int const backgroundCcNumber = 
     m_ComputeBackgroundTN ? m_BackgroundUnitCubeCCCounter() : 0;
-  
+
   delete[] subImage;
 
   return std::pair<unsigned int, unsigned int>(ccNumber, backgroundCcNumber);
@@ -90,24 +90,24 @@ TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
 
 
 template<typename TImage, typename TFGConnectivity, typename TBGConnectivity >
-std::pair<unsigned int, unsigned int> 
+std::pair<unsigned int, unsigned int>
 TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
 ::EvaluateAtContinuousIndex(ContinuousIndexType const & contIndex) const
   {
   typename TImage::IndexType index;
-  ConvertContinuousIndexToNearestIndex(contIndex, index);
+  this->ConvertContinuousIndexToNearestIndex(contIndex, index);
   return EvaluateAtIndex(index);
   }
 
 
 template<typename TImage, typename TFGConnectivity, typename TBGConnectivity >
-UnitCubeCCCounter< TFGConnectivity > 
+UnitCubeCCCounter< TFGConnectivity >
 TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
 ::m_ForegroundUnitCubeCCCounter = UnitCubeCCCounter< TFGConnectivity >();
 
 
 template<typename TImage, typename TFGConnectivity, typename TBGConnectivity >
-UnitCubeCCCounter< TBGConnectivity > 
+UnitCubeCCCounter< TBGConnectivity >
 TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
 ::m_BackgroundUnitCubeCCCounter = UnitCubeCCCounter< TBGConnectivity >();
 

@@ -66,6 +66,25 @@ int main(int argc, char** argv)
         }
 
         std::cout << "PASSED" << "\n";
+        // WRITE
+        try{
+            itk::ImageFileWriter<ImageType>::Pointer writer= itk::ImageFileWriter<ImageType>::New();
+            std::string filename = "./inputImage.tif";
+            writer->SetFileName(filename);
+            writer->SetInput(reader->GetOutput());
+            writer->Update();
+        } catch(std::exception & e){
+            std::cerr << "WRITE Failed : " << e.what() << std::endl;
+        }
+        try{
+            itk::ImageFileWriter<ImageType>::Pointer writer= itk::ImageFileWriter<ImageType>::New();
+            std::string filename = "./skeletonImage.tif";
+            writer->SetFileName(filename);
+            writer->SetInput(skeleton);
+            writer->Update();
+        } catch(std::exception & e){
+            std::cerr << "WRITE Failed : " << e.what() << std::endl;
+        }
     }
     catch(std::exception & e)
     {
